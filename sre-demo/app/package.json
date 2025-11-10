@@ -1,0 +1,11 @@
+{
+  "name": "sre-demo-app",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.645.0",
+    "express": "^4.19.2",
+    "prom-client": "^15.1.3"
+  }
+}
