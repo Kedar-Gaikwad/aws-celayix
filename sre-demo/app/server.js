@@ -27,6 +27,34 @@ const replicasGauge = new client.Gauge({
 });
 register.registerMetric(replicasGauge);
 
+const deviceCounter = new client.Counter({
+  name: "demo_device_requests_total",
+  help: "Requests grouped by detected device type.",
+  labelNames: ["device"]
+});
+register.registerMetric(deviceCounter);
+
+const detectDevice = (userAgent = "") => {
+  const ua = userAgent.toLowerCase();
+  if (ua.includes("iphone")) return "iphone";
+  if (ua.includes("ipad")) return "ipad";
+  if (ua.includes("android")) return "android";
+  if (ua.includes("windows")) return "windows";
+  if (ua.includes("mac os") || ua.includes("macintosh")) return "mac";
+  if (ua.includes("linux")) return "linux";
+  return "other";
+};
+
+app.use((req, _res, next) => {
+  if (req.path === "/metrics") {
+    return next();
+  }
+  const userAgent = req.get("user-agent") || "";
+  const device = detectDevice(userAgent);
+  deviceCounter.labels(device).inc();
+  next();
+});
+
 let replicas = 1; // simulated replicas 1..3
 let visits = 0;
 
